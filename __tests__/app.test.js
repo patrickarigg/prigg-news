@@ -52,6 +52,7 @@ describe("/api/articles/:article_id", () => {
       .then(({ body }) => {
         const article = body.article;
         expect(article).toMatchObject({
+          article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
           author: "butter_bridge",
