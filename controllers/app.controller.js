@@ -1,6 +1,7 @@
 const {
   selectEndpointDescriptions,
   selectAllTopics,
+  selectArticleById,
 } = require("../models/app.model");
 
 exports.getEndpointDescriptions = (req, res, next) => {
@@ -17,3 +18,11 @@ exports.getAllTopics = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getArticleById = (req,res,next) => {
+  const id=req.params.article_id
+  selectArticleById(id).then((article)=>{
+    res.status(200).send({article})
+  })
+  .catch(next)
+}
