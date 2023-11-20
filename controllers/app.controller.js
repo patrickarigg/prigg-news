@@ -3,6 +3,7 @@ const {
   selectAllTopics,
   selectArticleById,
   selectAllArticles,
+  selectCommentsForArticle,
 } = require("../models/app.model");
 
 exports.getEndpointDescriptions = (req, res, next) => {
@@ -37,3 +38,11 @@ exports.getAllArticles = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getCommentsForArticle = (req,res,next) => {
+  const id = req.params.article_id;
+  selectCommentsForArticle(id).then((comments)=>{
+    res.status(200).send({comments})
+  })
+  .catch(next);
+}

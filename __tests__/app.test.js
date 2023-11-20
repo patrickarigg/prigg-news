@@ -111,8 +111,49 @@ describe("/api/articles", () => {
           votes: 100,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          comment_count: 11
+          comment_count: 11,
         });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200: should return array of comments for given article id sorted by most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+        expect(comments.map((comment) => comment.comment_id)).toEqual([
+          5, 2, 18, 13, 7, 8, 6, 12, 3, 4, 9
+        ]);
+      });
+  });
+  test("GET 404: should return approriate response if id does not exist", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article ID does not exist");
+      });
+  });
+
+  test("GET 400: should return approriate response if the id is invalid", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request");
       });
   });
 });

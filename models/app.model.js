@@ -47,3 +47,23 @@ exports.selectAllArticles = () => {
       return response.rows;
     });
 };
+
+exports.selectCommentsForArticle = (id) => {
+  return db
+    .query(
+      `
+    select comment_id, votes, created_at, author, body, article_id from comments
+    where article_id = $1
+    order by created_at DESC`,
+      [id]
+    )
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article ID does not exist",
+        });
+      }
+      return response.rows;
+    });
+};
