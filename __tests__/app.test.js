@@ -15,13 +15,33 @@ describe("/api/topics", () => {
       .then(({ body }) => {
         const topics = body.topics;
         expect(Array.isArray(topics)).toBe(true);
-        expect(topics).toHaveLength(3)
+        expect(topics).toHaveLength(3);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
           });
         });
+      });
+  });
+});
+
+describe("/api", () => {
+  test("should provide a description of all endpoints available", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const endpointDescriptions = body.endpointDescriptions;
+        for (const endpoint in endpointDescriptions){
+          expect(endpointDescriptions[endpoint]).toHaveProperty(
+              "description"
+            );
+          expect(endpointDescriptions[endpoint]).toHaveProperty("queries");
+          expect(endpointDescriptions[endpoint]).toHaveProperty(
+            "exampleResponse"
+          );
+        }
 
       });
   });

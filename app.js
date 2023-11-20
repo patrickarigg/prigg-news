@@ -1,9 +1,13 @@
 const express = require("express");
-const { getAllTopics } = require("./controllers/app.controller");
-const { handlePostgresErrors, handleCustomErrors, handleServerErrors } = require("./errors");
+const {
+  getEndpointDescriptions,
+  getAllTopics,
+} = require("./controllers/app.controller");
+const { handleServerErrors } = require("./errors");
 
 const app = express();
 
+app.get('/api',getEndpointDescriptions)
 app.get('/api/topics',getAllTopics);
 
 app.use(handleServerErrors);
