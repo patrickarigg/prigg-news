@@ -26,6 +26,24 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api", () => {
+  test("should provide a description of all endpoints available", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const endpointDescriptions = body.endpointDescriptions;
+        for (const endpoint in endpointDescriptions) {
+          expect(endpointDescriptions[endpoint]).toHaveProperty("description");
+          expect(endpointDescriptions[endpoint]).toHaveProperty("queries");
+          expect(endpointDescriptions[endpoint]).toHaveProperty(
+            "exampleResponse"
+          );
+        }
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET 200: should return article object with required properties", () => {
     return request(app)
@@ -50,18 +68,16 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/100")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Article ID does not exist"
-        );
+        expect(body.msg).toBe("Article ID does not exist");
       });
   });
 
-    test("GET 400: should return approriate response if the id is invalid", () => {
-      return request(app)
-        .get("/api/articles/invalid_id")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid request");
-        });
-    });
+  test("GET 400: should return approriate response if the id is invalid", () => {
+    return request(app)
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request");
+      });
+  });
 });
