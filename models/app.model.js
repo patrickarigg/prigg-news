@@ -63,14 +63,30 @@ exports.selectCommentsForArticle = (id) => {
 };
 
 exports.insertComment = (article_id, newComment) => {
-  return db.query(
-    `
+  return db
+    .query(
+      `
     INSERT INTO comments(body, article_id, author, votes)
       VALUES($1, $2, $3, $4) RETURNING*;
     `,
-    [newComment.body, article_id, newComment.username, 0]
-  )
-  .then((response)=>{
-    return response.rows[0]
-  })
+      [newComment.body, article_id, newComment.username, 0]
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
+};
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+  return db
+    .query(
+      `
+    UPDATE articles
+    SET votes=votes+$1
+    WHERE article_id = $2 RETURNING*;
+    `,
+      [inc_votes, article_id]
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
 };

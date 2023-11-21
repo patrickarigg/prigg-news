@@ -69,15 +69,30 @@
     "description": "posts new comment for an article id given an object with an existing username and a body, e.g. { username: 'rogersop', body: 'Great article!' } ",
     "queries": [],
     "exampleResponse": {
-      "comment":
-        {
-          "comment_id": 19,
-          "body": "Great article!",
-          "article_id": 2,
-          "author": "rogersop",
-          "votes": 0,
-          "created_at": "2023-11-21T13:40:07.964Z"
-        }
+      "comment": {
+        "comment_id": 19,
+        "body": "Great article!",
+        "article_id": 2,
+        "author": "rogersop",
+        "votes": 0,
+        "created_at": "2023-11-21T13:40:07.964Z"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the votes on an article given an object of the form {'inc_votes': some_number}",
+    "queries": [],
+    "exampleResponse": {
+      "updatedArticle": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 200,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
     }
   }
 }

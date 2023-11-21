@@ -81,6 +81,57 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toBe("bad request");
       });
   });
+
+  test("PATCH 200: should update the votes for an article for a given article_id and respond with the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 100 })
+      .expect(200)
+      .then(({ body }) => {
+        const updatedArticle = body.updatedArticle;
+        expect(updatedArticle).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 200,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+
+  test("PATCH 404: should respond with an approriate response if the article_id does not exist", () => {
+    return request(app)
+      .patch("/api/articles/100")
+      .send({ inc_votes: 100 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article_id not found");
+      });
+  });
+
+  test("PATCH 400: should respond with an approriate response if the article_id is invalid", () => {
+    return request(app)
+      .patch("/api/articles/invalid_id")
+      .send({ inc_votes: 100 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("PATCH 400: should respond with an approriate response if the request object is invalid", () => {
+    return request(app)
+      .patch("/api/articles/invalid_id")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -212,6 +263,20 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("not found");
+      });
+  });
+
+  test("POST 400: should respond with an approriate response if the id is invalid", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Great article!",
+    };
+    return request(app)
+      .post("/api/articles/invalid_id/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 
