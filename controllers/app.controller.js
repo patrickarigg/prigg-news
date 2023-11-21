@@ -7,6 +7,7 @@ const {
   insertComment,
   updateArticleVotes,
   deleteComment,
+  selectAllUsers,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -88,14 +89,20 @@ exports.patchArticleVotes = (req, res, next) => {
 
 exports.deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
-
-
   checkExists("comments", "comment_id", comment_id)
-  .then(()=>{
-    deleteComment(comment_id)
-  })
-  .then(()=>{
-    res.status(204).send();
-  })
-  .catch(next);
+    .then(() => {
+      deleteComment(comment_id);
+    })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.getAllUsers = (req, res, next) => {
+  selectAllUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch(next);
 };
