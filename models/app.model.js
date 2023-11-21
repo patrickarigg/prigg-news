@@ -26,7 +26,7 @@ exports.selectArticleById = (id) => {
       if (response.rows.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: "Article ID does not exist",
+          msg: "article_id not found",
         });
       }
       return response.rows[0];
@@ -58,12 +58,6 @@ exports.selectCommentsForArticle = (id) => {
       [id]
     )
     .then((response) => {
-      if (response.rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Article ID does not exist",
-        });
-      }
       return response.rows;
     });
 };

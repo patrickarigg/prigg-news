@@ -5,6 +5,7 @@ const {
   selectAllArticles,
   selectCommentsForArticle,
 } = require("../models/app.model");
+const { checkExists } = require("../models/utils.model");
 
 exports.getEndpointDescriptions = (req, res, next) => {
   selectEndpointDescriptions()
@@ -41,7 +42,12 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getCommentsForArticle = (req,res,next) => {
   const id = req.params.article_id;
-  selectCommentsForArticle(id).then((comments)=>{
+
+  const commentPromises = [selectCommentsForArticle(id), checkExists('articles','article_id',id)];
+
+  Promise.all(commentPromises)
+  .then((resolvedPromises)=>{
+    const comments = resolvedPromises[0];
     res.status(200).send({comments})
   })
   .catch(next);

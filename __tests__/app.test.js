@@ -69,7 +69,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/100")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article ID does not exist");
+        expect(body.msg).toBe("article_id not found");
       });
   });
 
@@ -78,7 +78,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request");
+        expect(body.msg).toBe("invalid request");
       });
   });
 });
@@ -124,6 +124,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const comments = body.comments;
+        expect(comments).toHaveLength(11);
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -134,9 +135,18 @@ describe("/api/articles/:article_id/comments", () => {
             article_id: 1,
           });
         });
-        expect(comments.map((comment) => comment.comment_id)).toEqual([
-          5, 2, 18, 13, 7, 8, 6, 12, 3, 4, 9
-        ]);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200: should return [] if the article id is valid but there are no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toEqual([]);
+
+        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("GET 404: should return approriate response if id does not exist", () => {
@@ -144,7 +154,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/100/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article ID does not exist");
+        expect(body.msg).toBe("article_id not found");
       });
   });
 
@@ -153,7 +163,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/invalid_id/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request");
+        expect(body.msg).toBe("invalid request");
       });
   });
 });
