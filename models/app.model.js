@@ -61,3 +61,16 @@ exports.selectCommentsForArticle = (id) => {
       return response.rows;
     });
 };
+
+exports.insertComment = (article_id, newComment) => {
+  return db.query(
+    `
+    INSERT INTO comments(body, article_id, author, votes)
+      VALUES($1, $2, $3, $4) RETURNING*;
+    `,
+    [newComment.body, article_id, newComment.username, 0]
+  )
+  .then((response)=>{
+    return response.rows[0]
+  })
+};

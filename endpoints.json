@@ -44,23 +44,40 @@
   "GET /api/articles/:article_id/comments": {
     "description": "serves all comments for a given article id",
     "queries": [],
-    "exampleResponse": [
-      {
-        "comment_id": 5,
-        "votes": 0,
-        "created_at": "2020-11-03T21:00:00.000Z",
-        "author": "icellusedkars",
-        "body": "I hate streaming noses",
-        "article_id": 1
-      },
-      {
-        "comment_id": 2,
-        "votes": 14,
-        "created_at": "2020-10-31T03:03:00.000Z",
-        "author": "butter_bridge",
-        "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-        "article_id": 1
-      }
-    ]
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 5,
+          "votes": 0,
+          "created_at": "2020-11-03T21:00:00.000Z",
+          "author": "icellusedkars",
+          "body": "I hate streaming noses",
+          "article_id": 1
+        },
+        {
+          "comment_id": 2,
+          "votes": 14,
+          "created_at": "2020-10-31T03:03:00.000Z",
+          "author": "butter_bridge",
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "article_id": 1
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts new comment for an article id given an object with an existing username and a body, e.g. { username: 'rogersop', body: 'Great article!' } ",
+    "queries": [],
+    "exampleResponse": {
+      "comment":
+        {
+          "comment_id": 19,
+          "body": "Great article!",
+          "article_id": 2,
+          "author": "rogersop",
+          "votes": 0,
+          "created_at": "2023-11-21T13:40:07.964Z"
+        }
+    }
   }
 }

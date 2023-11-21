@@ -78,7 +78,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("invalid request");
+        expect(body.msg).toBe("bad request");
       });
   });
 });
@@ -147,7 +147,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments).toEqual([]);
       });
   });
-  test("GET 404: should return approriate response if id does not exist", () => {
+  test("GET 404: should respond with an approriate response if id does not exist", () => {
     return request(app)
       .get("/api/articles/100/comments")
       .expect(404)
@@ -156,12 +156,75 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 
-  test("GET 400: should return approriate response if the id is invalid", () => {
+  test("GET 400: should respond with an approriate response if the id is invalid", () => {
     return request(app)
       .get("/api/articles/invalid_id/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("invalid request");
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("POST 201: should add a comment for a given article id and respond with the posted comment", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Great article!",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "Great article!",
+          article_id: 2,
+          author: "rogersop",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+
+  test("POST 404: should respond with an appropriate message if the article_id does not exist", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Great article!",
+    };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+
+  test("POST 404: should respond with an appropriate message if the username does not exist", () => {
+    const newComment = {
+      username: "prigg",
+      body: "Great article!",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+
+  test("POST 400: should respond with an appropriate message if parts of the post request are missing", () => {
+    const newComment = {
+      username: "rogersop",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });
