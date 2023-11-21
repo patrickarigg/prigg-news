@@ -293,3 +293,27 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204: should delete the given comment by comment_id and return no content", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  test("DELETE 404: should respond with an approriate response if the comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment_id not found");
+      });
+  });
+
+  test("DELETE 400: should respond with an approriate response if the comment_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/invalid_comment_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
