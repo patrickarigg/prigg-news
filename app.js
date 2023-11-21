@@ -13,6 +13,7 @@ const {
   getAllArticles,
   getCommentsForArticle,
   postComment,
+  patchArticleVotes,
 } = require("./controllers/app.controller");
 
 const app = express();
@@ -26,6 +27,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments",getCommentsForArticle);
 
 app.post("/api/articles/:article_id/comments",postComment);
+
+app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.use(handlePostgresErrors);
 app.use(handleCustomErrors);
