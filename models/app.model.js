@@ -26,7 +26,7 @@ exports.selectArticleById = (id) => {
       if (response.rows.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: "Article ID does not exist",
+          msg: "article_id not found",
         });
       }
       return response.rows[0];
@@ -42,6 +42,20 @@ exports.selectAllArticles = () => {
     LEFT JOIN comments c ON a.article_id=c.article_id
     GROUP BY a.article_id
     ORDER BY a.created_at DESC`
+    )
+    .then((response) => {
+      return response.rows;
+    });
+};
+
+exports.selectCommentsForArticle = (id) => {
+  return db
+    .query(
+      `
+    select comment_id, votes, created_at, author, body, article_id from comments
+    where article_id = $1
+    order by created_at DESC`,
+      [id]
     )
     .then((response) => {
       return response.rows;
