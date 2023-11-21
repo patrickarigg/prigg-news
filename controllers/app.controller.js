@@ -4,6 +4,7 @@ const {
   selectArticleById,
   selectAllArticles,
   selectCommentsForArticle,
+  insertComment,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -40,15 +41,28 @@ exports.getAllArticles = (req, res, next) => {
     .catch(next);
 };
 
-exports.getCommentsForArticle = (req,res,next) => {
+exports.getCommentsForArticle = (req, res, next) => {
   const id = req.params.article_id;
 
-  const commentPromises = [selectCommentsForArticle(id), checkExists('articles','article_id',id)];
+  const commentPromises = [
+    selectCommentsForArticle(id),
+    checkExists("articles", "article_id", id),
+  ];
 
   Promise.all(commentPromises)
-  .then((resolvedPromises)=>{
-    const comments = resolvedPromises[0];
-    res.status(200).send({comments})
-  })
-  .catch(next);
-}
+    .then((resolvedPromises) => {
+      const comments = resolvedPromises[0];
+      res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.postComment = (req, res, next) => {
+  const newComment = req.body;
+  const article_id = req.params.article_id;
+  insertComment(article_id,newComment)
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch(next);
+};
