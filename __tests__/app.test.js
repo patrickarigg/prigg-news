@@ -145,8 +145,6 @@ describe("/api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const comments = body.comments;
         expect(comments).toEqual([]);
-
-        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("GET 404: should return approriate response if id does not exist", () => {
