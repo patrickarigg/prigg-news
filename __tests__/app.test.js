@@ -243,6 +243,48 @@ describe("/api/articles?topic=", () => {
   });
 });
 
+describe("/api/articles?sort_by=col&order=asc|desc", () => {
+  test("GET 200: should sort by given column if it exists and default to descending", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("GET 200: should sort by given column if it exists and by ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("votes");
+      });
+  });
+
+  test("GET 400: should give appropriate response if order query is invalid", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=invalid_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("GET 404: should give appropriate response if column doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid_col&order=asc")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("column does not exist");
+      });
+  });
+});
+
 describe("/api/articles/:article_id/comments", () => {
   test("GET 200: should return array of comments for given article id sorted by most recent comments first", () => {
     return request(app)
