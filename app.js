@@ -15,6 +15,7 @@ const {
   postComment,
   patchArticleVotes,
   deleteCommentById,
+  getAllUsers,
 } = require("./controllers/app.controller");
 
 const app = express();
@@ -26,6 +27,7 @@ app.get("/api/topics", getAllTopics);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments",getCommentsForArticle);
+app.get("/api/users",getAllUsers)
 
 app.post("/api/articles/:article_id/comments",postComment);
 

@@ -92,12 +92,17 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
 };
 
 exports.deleteComment = (comment_id) => {
-  return db
-    .query(
-      `
+  return db.query(
+    `
     DELETE FROM comments
     WHERE comment_id = $1;
     `,
-      [comment_id]
-    )
+    [comment_id]
+  );
+};
+
+exports.selectAllUsers = () => {
+  return db.query(`SELECT * FROM users`).then((response) => {
+    return response.rows;
+  });
 };

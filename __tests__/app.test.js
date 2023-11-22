@@ -317,3 +317,28 @@ describe("/api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("/api/users", () => {
+  test("GET 200: should return array of all users with required properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+        expect(users).toHaveLength(4)
+        users.forEach((article) => {
+          expect(article).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+        expect(users[0]).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+});
