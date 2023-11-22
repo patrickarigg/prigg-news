@@ -33,16 +33,20 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      `
+exports.selectAllArticles = (topic) => {
+  const queryValues=[];
+  let query = `
     SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, CAST(COUNT(comment_id) AS INT) comment_count
     FROM articles a
     LEFT JOIN comments c ON a.article_id=c.article_id
-    GROUP BY a.article_id
-    ORDER BY a.created_at DESC`
-    )
+    `;
+  if (topic){
+    query += ' WHERE topic=$1'
+    queryValues.push(topic)
+  }
+  query+= " GROUP BY a.article_id ORDER BY a.created_at DESC"
+  return db
+    .query(query,queryValues)
     .then((response) => {
       return response.rows;
     });

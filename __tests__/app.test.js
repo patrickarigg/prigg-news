@@ -141,6 +141,7 @@ describe("/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
+        expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -164,6 +165,60 @@ describe("/api/articles", () => {
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           comment_count: 11,
         });
+      });
+  });
+});
+
+describe("/api/articles?topic=", () => {
+  test("GET 200: should return array of all articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+        expect(articles[0]).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 2,
+        });
+      });
+  });
+
+  test("GET 200: should return empty array if topic exists but there are no articles with that topic", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toEqual([]);
+      });
+  });
+
+  test("GET 404: should respond with an approriate response if topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=blablabla")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("slug not found");
       });
   });
 });
@@ -325,7 +380,7 @@ describe("/api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const users = body.users;
-        expect(users).toHaveLength(4)
+        expect(users).toHaveLength(4);
         users.forEach((article) => {
           expect(article).toMatchObject({
             username: expect.any(String),
