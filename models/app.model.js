@@ -34,7 +34,6 @@ exports.selectArticleById = (id) => {
 };
 
 exports.selectAllArticles = (topic) => {
-  const articlePromises = []
   const queryValues=[];
   let query = `
     SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, CAST(COUNT(comment_id) AS INT) comment_count
