@@ -187,6 +187,98 @@ describe("/api/articles", () => {
         });
       });
   });
+
+  test("POST 201: should create a new article given a valid article object", () => {
+    const newArticle = {
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      article_img_url:
+        "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 14,
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          body: "I find this existence challenging",
+          topic: "mitch",
+          article_img_url:
+            "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("POST 201: should create a new article with the default image when no image given", () => {
+    const newArticle = {
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 14,
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          body: "I find this existence challenging",
+          topic: "mitch",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+
+  test("POST 404: should respond appropriately if the author does not exist", () => {
+    const newArticle = {
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "nonexistentauthor",
+      body: "I find this existence challenging",
+      article_img_url:
+        "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username not found");
+      });
+  });
+
+  test("POST 400: should respond appropriately if the article is missing a property", () => {
+    const newArticle = {
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      article_img_url:
+        "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
 });
 
 describe("/api/articles?topic=", () => {

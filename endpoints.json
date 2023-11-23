@@ -131,5 +131,35 @@
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
       }
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates the votes on a comment given an object of the form {'inc_votes': some_number}",
+    "queries": [],
+    "exampleResponse": {
+      "comment_id": 1,
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "article_id": 9,
+      "author": "butter_bridge",
+      "votes": 20,
+      "created_at": "2020-04-06T12:17:00.000Z"
+    }
+  },
+  "POST /api/articles":{
+    "description": "posts a new article if author, title, body, topic and article_img_url (optional) are provided. If article_img_url is not provided then a default image is used",
+    "queries":[],
+    "exampleResponse": {
+      "article": {
+          "article_id": 14,
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "article_img_url":
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          "votes": 0,
+          "created_at":  "2020-04-06T12:17:00.000Z",
+          "comment_count": 0
+        }
+    }
   }
 }

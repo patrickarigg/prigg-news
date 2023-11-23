@@ -10,6 +10,7 @@ const {
   selectAllUsers,
   selectUserByUsername,
   updateCommentVotes,
+  insertArticle,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -137,6 +138,21 @@ exports.patchCommentVotes = (req, res, next) => {
     .then((resolvedPromises) => {
       const updatedComment = resolvedPromises[0];
       res.status(200).send({ updatedComment });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const newArticle = req.body;
+  checkExists("users", "username", newArticle.author)
+    .then(() => {
+      return insertArticle(newArticle);
+    })
+    .then((article)=>{
+      return selectArticleById(article.article_id)
+    })
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };
