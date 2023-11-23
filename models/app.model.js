@@ -169,3 +169,28 @@ exports.updateCommentVotes = (comment_id, inc_votes) => {
       return response.rows[0];
     });
 };
+
+exports.insertArticle = (newArticle) => {
+  const insertValues = [
+    newArticle.title,
+    newArticle.topic,
+    newArticle.author,
+    newArticle.body,
+  ];
+
+  if (newArticle.article_img_url) {
+    insertValues.push(newArticle.article_img_url);
+  }
+  return db
+    .query(
+      `
+      INSERT INTO articles (title, topic, author, body, article_img_url)
+      VALUES($1, $2, $3, $4, ${newArticle.article_img_url ? "$5": "DEFAULT"})
+      RETURNING*;
+    `,
+      insertValues
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
+};
