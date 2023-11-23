@@ -412,6 +412,54 @@ describe("/api/articles/:article_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
+  test("PATCH 200: should update the votes for a comment and respond with the updated comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 4 })
+      .expect(200)
+      .then(({ body }) => {
+        const updatedComment = body.updatedComment;
+        expect(updatedComment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: "butter_bridge",
+          votes: 20,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+
+  test("PATCH 404: should respond approriately if the comment_id does not exist", () => {
+    return request(app)
+      .patch("/api/comments/100")
+      .send({ inc_votes: 100 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment_id not found");
+      });
+  });
+
+  test("PATCH 400: should respond approriately if the comment_id is invalid", () => {
+    return request(app)
+      .patch("/api/comments/invalid_comment_id")
+      .send({ inc_votes: 100 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("PATCH 400: should respond with an approriate response if the votes request object is invalid", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
   test("DELETE 204: should delete the given comment by comment_id and return no content", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
@@ -481,7 +529,7 @@ describe("/api/users/:username", () => {
       .get("/api/users/prigg")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("username not found")
+        expect(body.msg).toBe("username not found");
       });
   });
 });
