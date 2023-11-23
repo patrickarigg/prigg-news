@@ -39,11 +39,7 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = (
-  topic,
-  sort_by = "created_at",
-  order = "DESC"
-) => {
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
   //Handle possible SQL injection
   const validOrders = ["ASC", "asc", "DESC", "desc"];
   const validSortByCols = [
@@ -143,4 +139,18 @@ exports.selectAllUsers = () => {
   return db.query(`SELECT * FROM users`).then((response) => {
     return response.rows;
   });
+};
+
+exports.selectUserByUsername = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username=$1`, [username])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "username not found",
+        });
+      }
+      return response.rows[0];
+    });
 };

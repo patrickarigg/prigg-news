@@ -8,6 +8,7 @@ const {
   updateArticleVotes,
   deleteComment,
   selectAllUsers,
+  selectUserByUsername,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -112,3 +113,12 @@ exports.getAllUsers = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getUserByUsername = (req,res,next) => {
+  const username = req.params.username
+  selectUserByUsername(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch(next);
+}
