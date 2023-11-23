@@ -1,4 +1,3 @@
-const { response } = require("../app");
 const fs = require("fs/promises");
 
 db = require("../db/connection");
