@@ -39,7 +39,13 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
+exports.selectAllArticles = (
+  topic,
+  sort_by = "created_at",
+  order = "DESC",
+  limit,
+  page
+) => {
   //Handle possible SQL injection
   const validOrders = ["ASC", "asc", "DESC", "desc"];
   const validSortByCols = [
@@ -73,13 +79,26 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
   query += " GROUP BY a.article_id"; // ORDER BY created_at DESC
 
   if (sort_by) {
-    query += ` ORDER BY ${sort_by} ${order}`;
+    query += ` ORDER BY ${sort_by} ${order}, a.article_id`;
   }
 
-  //send query
-  return db.query(query, queryValues).then((response) => {
-    return response.rows;
-  });
+  return db
+    .query(query, queryValues)
+    .then((response) => {
+      const total_count = response.rows.length;
+      return total_count;
+    })
+    .then((total_count) => {
+      if (limit || page) {
+        limit = limit ? Number(limit) : 10;
+        query += ` LIMIT ${limit}
+                  OFFSET ${page ? (Number(page) - 1) * Number(limit) : 0}`;
+      }
+      return db.query(query, queryValues).then((response) => {
+        const articles = response.rows;
+        return { articles, total_count };
+      });
+    });
 };
 
 exports.selectCommentsForArticle = (id) => {
@@ -185,7 +204,7 @@ exports.insertArticle = (newArticle) => {
     .query(
       `
       INSERT INTO articles (title, topic, author, body, article_img_url)
-      VALUES($1, $2, $3, $4, ${newArticle.article_img_url ? "$5": "DEFAULT"})
+      VALUES($1, $2, $3, $4, ${newArticle.article_img_url ? "$5" : "DEFAULT"})
       RETURNING*;
     `,
       insertValues

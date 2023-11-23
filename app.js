@@ -15,8 +15,8 @@ app.use(express.json())
 app.use("/api", apiRouter);
 
 //error handlers
-app.use(handlePostgresErrors);
 app.use(handleCustomErrors);
+app.use(handlePostgresErrors);
 app.use(handleServerErrors);
 
 module.exports = app;
