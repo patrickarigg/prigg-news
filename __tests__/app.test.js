@@ -377,6 +377,95 @@ describe("/api/articles?sort_by=col&order=asc|desc", () => {
   });
 });
 
+describe("/api/articles?limit=<value>&p=<value>", () => {
+  test("GET 200: should limit number of responses if limit query used", () => {
+    return request(app)
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const total_count = body.total_count;
+        const articleIds = articles.map((article) => article.article_id);
+        expect(articles).toHaveLength(5);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articleIds).toEqual([3, 6, 2, 12, 13]);
+        expect(total_count).toBe(13);
+      });
+  });
+
+  test("GET 200: should limit number of responses if limit query used and paginate if p query used", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const total_count = body.total_count;
+        const articleIds = articles.map((article) => article.article_id);
+        expect(articles).toHaveLength(5);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articleIds).toEqual([5, 1, 9, 10, 4]);
+        expect(total_count).toBe(13);
+      });
+  });
+
+  test("GET 200: should return empty array if page is higher than amount of data", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=10")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const total_count = body.total_count;
+        const articleIds = articles.map((article) => article.article_id);
+        expect(articles).toHaveLength(0);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articleIds).toEqual([]);
+        expect(total_count).toBe(13);
+      });
+  });
+
+  test("GET 200: should default to limit of 10 if p given and limit not", () => {
+    return request(app)
+      .get("/api/articles?p=1")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const total_count = body.total_count;
+        const articleIds = articles.map((article) => article.article_id);
+        expect(articles).toHaveLength(10);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articleIds).toEqual([3, 6, 2, 12, 13, 5, 1, 9, 10, 4]);
+        expect(total_count).toBe(13);
+      });
+  });
+
+  test("GET 400: should respond appropriately if limit given an invalid value", () => {
+    return request(app)
+      .get("/api/articles?limit=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("GET 400: should respond appropriately if limit given a negative value", () => {
+    return request(app)
+      .get("/api/articles?limit=-1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("GET 400: should respond appropriately if page given a negative value", () => {
+    return request(app)
+      .get("/api/articles?p=-1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
 describe("/api/articles/:article_id/comments", () => {
   test("GET 200: should return array of comments for given article id sorted by most recent comments first", () => {
     return request(app)

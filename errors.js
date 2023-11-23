@@ -5,6 +5,12 @@ exports.handlePostgresErrors = (err, req, res, next) => {
     res.status(404).send({ msg: "not found" });
   } else if (err.code==="23502"){ //violating non-null constraint
     res.status(400).send({ msg: "bad request" });
+  } else if (err.code==='42703'){ //column doesn't exit - thrown for LIMIT nan
+    res.status(400).send({ msg: "bad request" });
+  } else if (err.code==='2201W'){ //LIMIT given a negative number
+    res.status(400).send({ msg: "bad request" });
+  } else if (err.code='2201X') { //OFFSET given a negative number
+    res.status(400).send({ msg: "bad request" });
   } else {
     next(err);
   }

@@ -40,15 +40,15 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic, sort_by, order } = req.query;
-  const articlePromises = [selectAllArticles(topic, sort_by, order)];
+  const { topic, sort_by, order, limit, p } = req.query;
+  const articlePromises = [selectAllArticles(topic, sort_by, order, limit, p)];
   if (topic) {
     articlePromises.push(checkExists("topics", "slug", topic));
   }
   Promise.all(articlePromises)
     .then((resolvedPromises) => {
-      const articles = resolvedPromises[0];
-      res.status(200).send({ articles });
+      const {articles, total_count} = resolvedPromises[0];
+      res.status(200).send({ articles, total_count });
     })
     .catch(next);
 };
