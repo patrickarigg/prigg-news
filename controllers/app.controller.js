@@ -9,6 +9,7 @@ const {
   deleteComment,
   selectAllUsers,
   selectUserByUsername,
+  updateCommentVotes,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -38,9 +39,9 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const {topic, sort_by, order} = req.query;
+  const { topic, sort_by, order } = req.query;
   const articlePromises = [selectAllArticles(topic, sort_by, order)];
-  if (topic){
+  if (topic) {
     articlePromises.push(checkExists("topics", "slug", topic));
   }
   Promise.all(articlePromises)
@@ -114,11 +115,28 @@ exports.getAllUsers = (req, res, next) => {
     .catch(next);
 };
 
-exports.getUserByUsername = (req,res,next) => {
-  const username = req.params.username
+exports.getUserByUsername = (req, res, next) => {
+  const username = req.params.username;
   selectUserByUsername(username)
     .then((user) => {
       res.status(200).send({ user });
     })
     .catch(next);
-}
+};
+
+exports.patchCommentVotes = (req, res, next) => {
+  const { comment_id } = req.params;
+  const inc_votes = req.body.inc_votes;
+
+  const patchCommentsPromises = [
+    updateCommentVotes(comment_id, inc_votes),
+    checkExists("comments", "comment_id", comment_id),
+  ];
+
+  Promise.all(patchCommentsPromises)
+    .then((resolvedPromises) => {
+      const updatedComment = resolvedPromises[0];
+      res.status(200).send({ updatedComment });
+    })
+    .catch(next);
+};
