@@ -592,6 +592,85 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments?limit=<value>&p=<value>", () => {
+  test("GET 200: should limit number of responses if limit query used", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        const commentIds = comments.map((comment) => comment.comment_id);
+        expect(comments).toHaveLength(5);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        expect(commentIds).toEqual([5, 2, 18, 13, 7]);
+      });
+  });
+
+  test("GET 200: should paginate with default limit 10 if p query used", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        const commentIds = comments.map((comment) => comment.comment_id);
+        expect(comments).toHaveLength(1);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        expect(commentIds).toEqual([9]);
+      });
+  });
+
+  test("GET 200: should limit number of responses if limit query used and paginate if p query used", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=2")
+      .then(({ body }) => {
+        const comments = body.comments;
+        const commentIds = comments.map((comment) => comment.comment_id);
+        expect(comments).toHaveLength(5);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        expect(commentIds).toEqual([8, 6, 12, 3, 4]);
+      });
+  });
+
+  test("GET 200: should return empty array if page number is too high", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=10")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        const commentIds = comments.map((comment) => comment.comment_id);
+        expect(comments).toHaveLength(0);
+        expect(commentIds).toEqual([]);
+      });
+  });
+
+  test("GET 400: should respond appropriately if limit given an invalid value", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("GET 400: should respond appropriately if limit given a negative value", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=-1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("GET 400: should respond appropriately if page given a negative value", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=-1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
 describe("/api/comments/:comment_id", () => {
   test("PATCH 200: should update the votes for a comment and respond with the updated comment", () => {
     return request(app)

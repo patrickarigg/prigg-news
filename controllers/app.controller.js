@@ -55,9 +55,9 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getCommentsForArticle = (req, res, next) => {
   const id = req.params.article_id;
-
+  const {limit,p} = req.query;
   const commentPromises = [
-    selectCommentsForArticle(id),
+    selectCommentsForArticle(id,limit, p),
     checkExists("articles", "article_id", id),
   ];
 

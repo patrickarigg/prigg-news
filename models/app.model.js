@@ -101,18 +101,21 @@ exports.selectAllArticles = (
     });
 };
 
-exports.selectCommentsForArticle = (id) => {
-  return db
-    .query(
-      `
+exports.selectCommentsForArticle = (id, limit, page) => {
+  let query = `
     select comment_id, votes, created_at, author, body, article_id from comments
     where article_id = $1
-    order by created_at DESC`,
-      [id]
-    )
-    .then((response) => {
-      return response.rows;
-    });
+    order by created_at DESC, comment_id`;
+
+  if (limit || page) {
+    limit = limit ? Number(limit) : 10;
+    query += ` LIMIT ${limit}
+              OFFSET ${page ? (Number(page) - 1) * Number(limit) : 0}`;
+  }
+
+  return db.query(query, [id]).then((response) => {
+    return response.rows;
+  });
 };
 
 exports.insertComment = (article_id, newComment) => {
