@@ -161,5 +161,15 @@
           "comment_count": 0
         }
     }
+  },
+  "POST /api/topics":{
+    "description": "posts a new topic if slug and description are given are provided in the req body",
+    "queries": [],
+    "exampleResponse": {
+      "topic": {
+        "slug": "new topic name",
+        "description": "new topic description"
+      }
+    }
   }
 }

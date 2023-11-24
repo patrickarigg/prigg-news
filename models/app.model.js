@@ -216,3 +216,18 @@ exports.insertArticle = (newArticle) => {
       return response.rows[0];
     });
 };
+
+exports.insertTopic = (newTopic) => {
+  return db
+    .query(
+      `
+      INSERT INTO topics (slug, description)
+      VALUES($1, $2)
+      RETURNING*;
+    `,
+      [newTopic.slug, newTopic.description]
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
+};

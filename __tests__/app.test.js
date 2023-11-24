@@ -24,6 +24,36 @@ describe("/api/topics", () => {
         });
       });
   });
+
+  test("POST 201: should post a new topic to the topics table", () => {
+    const newTopic = {
+      slug: "topic name",
+      description: "topic description",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toMatchObject({
+          slug: "topic name",
+          description: "topic description",
+        });
+      });
+  });
+
+  test("POST 400: should respond appropriately if an invalid topic object is sent", () => {
+    const newTopic = {};
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+
 });
 
 describe("/api", () => {

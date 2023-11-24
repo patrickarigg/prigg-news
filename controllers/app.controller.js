@@ -11,6 +11,7 @@ const {
   selectUserByUsername,
   updateCommentVotes,
   insertArticle,
+  insertTopic,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -156,3 +157,11 @@ exports.postArticle = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.postTopic = (req,res,next) => {
+  const newTopic = req.body;
+  insertTopic(newTopic).then((topic)=>{
+    res.status(201).send({ topic });
+  })
+  .catch(next)
+}
