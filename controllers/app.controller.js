@@ -12,6 +12,7 @@ const {
   updateCommentVotes,
   insertArticle,
   insertTopic,
+  deleteArticle,
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
@@ -48,7 +49,7 @@ exports.getAllArticles = (req, res, next) => {
   }
   Promise.all(articlePromises)
     .then((resolvedPromises) => {
-      const {articles, total_count} = resolvedPromises[0];
+      const { articles, total_count } = resolvedPromises[0];
       res.status(200).send({ articles, total_count });
     })
     .catch(next);
@@ -56,9 +57,9 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getCommentsForArticle = (req, res, next) => {
   const id = req.params.article_id;
-  const {limit,p} = req.query;
+  const { limit, p } = req.query;
   const commentPromises = [
-    selectCommentsForArticle(id,limit, p),
+    selectCommentsForArticle(id, limit, p),
     checkExists("articles", "article_id", id),
   ];
 
@@ -149,8 +150,8 @@ exports.postArticle = (req, res, next) => {
     .then(() => {
       return insertArticle(newArticle);
     })
-    .then((article)=>{
-      return selectArticleById(article.article_id)
+    .then((article) => {
+      return selectArticleById(article.article_id);
     })
     .then((article) => {
       res.status(201).send({ article });
@@ -158,10 +159,23 @@ exports.postArticle = (req, res, next) => {
     .catch(next);
 };
 
-exports.postTopic = (req,res,next) => {
+exports.postTopic = (req, res, next) => {
   const newTopic = req.body;
-  insertTopic(newTopic).then((topic)=>{
-    res.status(201).send({ topic });
-  })
-  .catch(next)
-}
+  insertTopic(newTopic)
+    .then((topic) => {
+      res.status(201).send({ topic });
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  checkExists("articles", "article_id", article_id)
+    .then(() => {
+      return deleteArticle(article_id);
+    })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};

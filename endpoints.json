@@ -171,5 +171,10 @@
         "description": "new topic description"
       }
     }
-  }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article and its respective comments",
+    "queries": [],
+    "exampleResponse": {}
+}
 }

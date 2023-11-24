@@ -231,3 +231,14 @@ exports.insertTopic = (newTopic) => {
       return response.rows[0];
     });
 };
+
+exports.deleteArticle = (article_id) => {
+  return db.query(
+    `
+    DELETE FROM articles
+    WHERE article_id = $1;
+    `,
+    [article_id]
+  )
+  .catch(err=>{console.log(err);})
+};
