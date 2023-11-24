@@ -1,0 +1,42 @@
+name: Test & Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test-utils:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and clone repo
+        uses: actions/checkout@v4.1.1
+      - name: Install dependencies
+        run: npm install
+      - name: Test utils
+        run: npm run test utils
+  test-integration:
+    needs: test-utils
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and clone repo
+        uses: actions/checkout@v4.1.1
+      - name: Install dependencies
+        run: npm install
+      - name: Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql db: test_db
+          postgresql user: test_user
+          postgresql password: test_password
+      - name: Test app
+        run: PGDATABASE=test_db PGUSER=test_user PGPASSWORD=test_password npm run test app
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
