@@ -7,7 +7,6 @@ exports.selectEndpointDescriptions = () => {
     .readFile(`${__dirname}/../endpoints.json`, "utf-8")
     .then((fileContents) => {
       const endpointDescriptions = JSON.parse(fileContents);
-      delete endpointDescriptions["GET /api"];
       return endpointDescriptions;
     });
 };
