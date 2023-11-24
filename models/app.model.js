@@ -240,5 +240,4 @@ exports.deleteArticle = (article_id) => {
     `,
     [article_id]
   )
-  .catch(err=>{console.log(err);})
 };
