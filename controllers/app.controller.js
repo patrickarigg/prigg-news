@@ -16,6 +16,10 @@ const {
 } = require("../models/app.model");
 const { checkExists } = require("../models/utils.model");
 
+exports.handleInvalidEndpoints = (req,res,next) => {
+  res.status(404).send({msg:"Invalid request - for a description of all valid api endpoints go to /api"})
+}
+
 exports.getEndpointDescriptions = (req, res, next) => {
   selectEndpointDescriptions()
     .then((endpointDescriptions) => {

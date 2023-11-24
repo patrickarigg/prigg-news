@@ -3,10 +3,22 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data/index");
-const endpointsJSONFile = require("../endpoints.json")
+const endpointsJSONFile = require("../endpoints.json");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
+
+describe("Invalid paths", () => {
+  test("should reutrn a useful response if endpoint path is not valid", () => {
+    return request(app).get("/")
+    .expect(404)
+    .then(({body})=>{
+      expect(body.msg).toBe(
+        "Invalid request - for a description of all valid api endpoints go to /api"
+      );
+    });
+  });
+});
 
 describe("/api/topics", () => {
   test("GET 200: should return array of all topics with required properties", () => {
