@@ -1,7 +1,7 @@
-name: Test & Deploy MAIN
+name: Test PR
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -32,9 +32,3 @@ jobs:
           postgresql password: test_password
       - name: Test app
         run: PGDATABASE=test_db PGUSER=test_user PGPASSWORD=test_password npm run test app
-  deploy:
-    needs: test-integration
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
