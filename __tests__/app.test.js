@@ -50,10 +50,9 @@ describe("/api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
-
 });
 
 describe("/api", () => {
@@ -177,6 +176,28 @@ describe("/api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/invalid_id")
       .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("DELETE 204: should delete the given article and its comments by comment_id and return no content", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+
+  test("DELETE 404: should respond with an approriate response if the article_id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article_id not found");
+      });
+  });
+
+  test("DELETE 400: should respond with an approriate response if the article_id is invalid", () => {
+    return request(app)
+      .delete("/api/articles/invalid_comment_id")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
