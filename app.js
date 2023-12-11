@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const {
   handlePostgresErrors,
@@ -10,7 +11,8 @@ const { handleInvalidEndpoints } = require("./controllers/app.controller");
 
 const app = express();
 
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 //routes
 app.use("/api", apiRouter);
